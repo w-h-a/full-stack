@@ -78,7 +78,8 @@ const App =
             if (model.toAdd) {
                 personService
                     .postNew(model.toAdd)
-                    .then(person => controller({ type: "POST_PERSON_SUCCESS" }))
+                    .then(_ => controller({ type: "POST_PERSON_SUCCESS" }))
+                    .catch(err => controller({ type: "POST_PERSON_FAILURE", payload: err.response.data.error }))
             }
         }, [model.toAdd])
         useEffect(() => {
@@ -93,6 +94,7 @@ const App =
                 personService
                     .putNum(model.toEditNum)
                     .then(_ => controller({ type: "PUT_PERSON_SUCCESS" }))
+                    //.catch(err => controller({ type: "PUT_PERSON_FAILURE", payload: err.response.data.error }))
             }
         }, [model.toEditNum])
 
@@ -140,12 +142,22 @@ const App =
                     update({...model, getPersons: true, toAdd: null})
                     break
                 }
+                case "POST_PERSON_FAILURE": {
+                    alert(msg.payload)
+                    update({...model, toAdd: null})
+                    break
+                }
                 case "DELETE_PERSON_SUCCESS": {
                     update({...model, getPersons: true, toDelete: null})
                     break
                 }
                 case "PUT_PERSON_SUCCESS": {
                     update({...model, getPersons: true, toEditNum: null})
+                    break
+                }
+                case "PUT_PERSON_FAILURE": {
+                    alert(msg.payload)
+                    update({...model, toEditNum: null})
                     break
                 }
                 default: {
